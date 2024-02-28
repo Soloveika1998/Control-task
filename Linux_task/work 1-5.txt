@@ -1,0 +1,20 @@
+    1  cat > Pets
+    2  cat > 'Pack animals'
+    3  cat Pets 'Pack animals' > Animals
+    4  cat Animals
+    5  mv Animals Human Friends
+    6  mv Animals 'Human Friends'
+    7  ls
+    8  mkdir myFolder
+    9  ls
+   10  mv 'Human Friends' myFolder/
+   11  ls
+   12  cd myFolder/
+   13  ls
+   14  sudo apt update
+   15  sudo apt install mysql-server
+   16  sudo service mysql status
+   17  wget http://ftp.us.debian.org/debian/pool/main/s/sl/sl_5.02-1_amd64.deb
+   18  sudo dpkg -i sl_5.02-1_amd64.deb
+   19  sudo dpkg -r sl
+   20  history
