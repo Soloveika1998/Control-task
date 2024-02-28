@@ -1,0 +1,204 @@
+-- Задание №8
+-- Создаем базу данных
+CREATE DATABASE `Human Friends`;
+
+-- Создем родительский класс с видами животных
+CREATE TABLE Parent_class (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  species VARCHAR(50)
+);
+
+-- Наполняем таблицу видами
+insert into Parent_class (species)
+values ('вьючные'),
+		('домашние');
+
+-- Создаем таблицу Домашних животных
+CREATE TABLE Home_animals (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  species_name VARCHAR(50),
+  class_id INT,
+  FOREIGN KEY (class_id) REFERENCES Parent_class(id)
+);
+
+-- Наполняем таблицу доашними животнми
+insert into Home_animals (species_name, class_id)
+values ('кошки', 2),
+	   ('собаки', 2),
+	   ('хомяки', 2);
+	  
+-- Создаем таблицу для вьючных животных
+CREATE TABLE Pack_animals (
+  id INT PRIMARY key AUTO_INCREMENT,
+  species_name VARCHAR(50),
+  class_id INT,
+  FOREIGN KEY (class_id) REFERENCES Parent_class(id)
+);
+
+-- Наполняем таблицу животными
+insert into Pack_animals (species_name, class_id)
+values ('лошади', 1),
+	   ('ослы', 1),
+	   ('верблюды', 1);
+	  
+-- Задание п9, 
+-- Домашние животные  
+
+	  
+-- Создаем таблицу Собаки
+CREATE TABLE Dogs (
+  id INT PRIMARY key AUTO_INCREMENT,
+  name VARCHAR(50),
+  orders VARCHAR(50),
+  birdth DATE,
+  class_id int,
+  FOREIGN KEY (class_id) REFERENCES Home_animals(id)
+);
+
+
+-- Наполняем таблицу Собаки командами
+INSERT INTO Dogs ( name, orders, birdth, class_id)
+VALUES ('Барбос', 'Дай лапу', '2022-01-21', 2),
+       ('Полкан', 'Лежать', '2010-03-08', 2);
+
+      
+-- Создаем таблицу кошки
+CREATE TABLE Cats (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50),
+  orders VARCHAR(50),
+  birdth DATE,
+  class_id int, 
+  FOREIGN KEY (class_id) REFERENCES Home_animals(id)
+);
+
+
+-- наполняем таблицу кошки командами
+INSERT INTO Cats (id, name, orders, birdth, class_id)
+VALUES (1, 'Симба', 'Кис-кис', '2020-01-27', 1),
+       (2, 'Делайла', 'Давай играть', '2019-03-08', 1);
+      
+      
+ -- Создаем таблицу хомяки     
+CREATE TABLE Hamster (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50),
+  orders VARCHAR(50),
+  birdth DATE,
+  class_id int,
+  FOREIGN KEY (class_id) REFERENCES Home_animals(id)
+);
+
+
+-- Наполняем таблицу хомяки командами
+INSERT INTO Hamster ( name, orders, birdth, class_id)
+VALUES ('Кулик', 'Спать', '2023-01-21', 3),
+       ('Хаги', 'Бегать', '2002-03-08', 3);
+
+
+-- Вьючные животные
+CREATE TABLE Horses (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50),
+  orders VARCHAR(50),
+  birdth DATE,
+  class_id int,
+  FOREIGN KEY (class_id) REFERENCES Pack_animals(id)
+);
+
+
+-- Наполняем таблицу Лошади
+INSERT INTO Horses ( name, orders, birdth, class_id)
+VALUES ('Скорость', 'Но', '2018-01-21', 1),
+       ('Грей', 'Бррррр', '2023-03-08', 1);
+
+
+-- Создаем таблицу Верблюды
+CREATE TABLE Camels (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50),
+  orders VARCHAR(50),
+  birdth DATE,
+  class_id int, 
+  FOREIGN KEY (class_id) REFERENCES Pack_animals(id)
+);
+
+
+-- Наполняем таблицу верблюды командами
+INSERT INTO Camels ( name, orders, birdth, class_id)
+VALUES ('Зефир', 'Но, пошел', '2019-09-01', 3),
+       ('Багдад', 'На месте', '2020-11-12', 3),
+       ('Скорость', 'Ждать', '2021-04-05', 3);
+
+
+-- Создаем таблицу Обезьяны
+CREATE TABLE Donkeys (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50),
+  orders VARCHAR(50),
+  birdth DATE,
+  class_id int,
+  FOREIGN KEY (class_id) REFERENCES Pack_animals(id)
+);
+
+
+-- Наполняем таблицу Ослы
+INSERT INTO Donkeys ( name, orders, birdth, class_id)
+VALUES ('Вася', 'Есть', '2017-01-21', 2),
+       ('Иван', 'Прыгать', '2005-03-08', 2);
+       
+      
+-- Заание №10
+-- Удаление таблицы camel
+      
+DELETE FROM camels;
+
+-- Объеденяем таблицы Лошади и Ослы
+SELECT Name, orders, birdth FROM Horses
+UNION SELECT  Name, orders, birdth FROM Donkeys;
+
+-- Задание №11
+
+-- Создаем временную таблицу животные, для хранение промежуточных данных
+CREATE TEMPORARY TABLE Animals AS 
+SELECT *, 'Лошади' as species FROM Horses
+UNION SELECT *, 'Ослы' AS species FROM Donkeys
+UNION SELECT *, 'Собаки' AS species FROM Dogs
+UNION SELECT *, 'Кошки' AS species FROM Cats
+UNION SELECT *, 'Хомяки' AS species FROM Hamster;
+
+
+-- Создаем таблицу молодые животные
+CREATE TABLE no_old_animal AS
+SELECT Name, orders, birdth, species, TIMESTAMPDIFF(MONTH, birdth, CURDATE()) AS Age_in_month
+FROM Animals WHERE birdth BETWEEN ADDDATE(curdate(), INTERVAL -3 YEAR) AND ADDDATE(CURDATE(), INTERVAL -1 YEAR);
+ 
+SELECT * FROM no_old_animal;
+
+
+-- Задание №12
+-- Объеденяем таблицы с сохранением принадлежности к старым таблицам
+SELECT h.Name, h.birdth, h.orders, pa.species_name, ya.Age_in_month 
+FROM Horses h
+LEFT JOIN no_old_animal ya ON ya.Name = h.Name
+LEFT JOIN Pack_animals pa ON pa.Id = h.class_id
+UNION 
+SELECT d.Name, d.birdth, d.orders, pa.species_name, ya.Age_in_month 
+FROM Donkeys d 
+LEFT JOIN no_old_animal ya ON ya.Name = d.Name
+LEFT JOIN Pack_animals pa ON pa.Id = d.class_id
+UNION
+SELECT c.Name, c.birdth, c.orders, ha.species_name, ya.Age_in_month 
+FROM Cats c
+LEFT JOIN no_old_animal ya ON ya.Name = c.Name
+LEFT JOIN Home_animals ha ON ha.Id = c.class_id
+UNION
+SELECT d.Name, d.birdth, d.orders, ha.species_name, ya.Age_in_month 
+FROM Dogs d
+LEFT JOIN no_old_animal ya ON ya.Name = d.Name
+LEFT JOIN Home_animals ha ON ha.Id = d.class_id
+UNION
+SELECT hm.Name, hm.birdth, hm.orders, ha.species_name, ya.Age_in_month 
+FROM Hamster hm
+LEFT JOIN no_old_animal ya ON ya.Name = hm.Name
+LEFT JOIN Home_animals ha ON ha.Id = hm.class_id;
